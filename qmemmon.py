@@ -27,9 +27,7 @@ class Slice(QGraphicsEllipseItem):
         self.setPen(QPen(Qt.white, 1.5))
 
 label_colors = [ 
-    None,
-    QColor(0xcc, 0x00, 0x00), QColor(0xf5, 0x79, 0x00), QColor(0xed, 0xd4, 0x00), QColor(0x73, 0xd2, 0x16),
-    QColor(0x55, 0x57, 0x53), QColor(0x34, 0x65, 0xa4), QColor(0x75, 0x50, 0x7b), QColor(0x00, 0x00, 0x00),
+    0x000000,0xcc0000,0xf57900,0xedd400,0x73d216,0x555753,0x345a4,0x75507b,0x000000,
 ]
 
 class Pie(QWidget):
@@ -39,7 +37,7 @@ class Pie(QWidget):
 
         for dom in doms:
                 angle = dom['aloc'] * 16*360 / t_aloc
-                clr = label_colors[dom['label']]
+                clr = QColor(label_colors[dom['label']])
 
                 w = self.width(); h = self.height()
                 r = (w if w<h else h) / 2 - fm.height()
@@ -47,7 +45,8 @@ class Pie(QWidget):
                 s=Slice(0, 0, start_angle, angle, clr, r*2, Qt.SolidPattern)
                 s.setToolTip(dom['name'])
                 s.setToolTip("{}\nAlloc: {} MB\nUsed: {} MB\nCache/Free: {} MB".format(
-                     dom['name'], dom['aloc']>>10, dom['used']>>10, (dom['aloc']-dom['used'])>>10))
+                     dom['name'], dom['aloc']>>10, dom['used']>>10, 
+                    (dom['aloc']-dom['used'])>>10))
                 scene.addItem(s)
 
                 rb = r*2 * dom['pref'] / dom['aloc'] 
@@ -66,8 +65,7 @@ class Pie(QWidget):
                 abig = (-start_angle - angle/2)
                 a = abig * 3.14159 * 2 / 360 / 16
                 l = QGraphicsSimpleTextItem(dom['name'])
-                x = int(cos(a) * rb + r)
-                y = int(sin(a) * rb + r)
+                x = int(cos(a) * rb + r); y = int(sin(a) * rb + r)
 
                 w = fm.width(dom['name'])
                 l.setPos(x-(w if x<r else 0), y-fm.height()/2)
