@@ -6,4 +6,4 @@ Full slice is memory allocated to domain
 
 Dotted area is "preferred" memory (currently used memory * cache_factor)
 
-<img src="https://github.com/johnyjukya/qmemmon/screenshot.png">
+<img src="https://github.com/JohnyJukya/qmemmon/raw/master/screenshot.png">
