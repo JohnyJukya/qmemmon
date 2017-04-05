@@ -5,3 +5,5 @@ Shaded/dotta area is memory reported as actively used by a domain (excluding buf
 Full slice is memory allocated to domain
 
 Dotted area is "preferred" memory (currently used memory * cache_factor)
+
+<img src="https://github.com/johnyjukya/screenshot.png">
