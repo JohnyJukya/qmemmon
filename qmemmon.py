@@ -86,7 +86,6 @@ class MemPieView(QGraphicsView):
 
     def resizeEvent(self, evt):
         self.doupdate()
-        print "Rect:",self.scene.getSceneRect()
 
     def doupdate(self):
         self.populate(*mem())
