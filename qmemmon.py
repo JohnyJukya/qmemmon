@@ -49,6 +49,7 @@ def mem():
             dom['aloc'] = aloc
             dom['used'] = used
             dom['pref'] = pref
+            dom['swap'] = swap
             dom['label'] = vm.label.index
             doms.append(dom)
         except Exception:
@@ -104,9 +105,9 @@ class MemPieView(QGraphicsView):
 
             s=Slice(0, 0, start_angle, angle, clr, r*2, Qt.SolidPattern)
             s.setToolTip(dom['name'])
-            s.setToolTip("{}\nAlloc: {} MB\nUsed: {} MB\nCache/Free: {} MB".format(
+            s.setToolTip("{}\nAlloc: {} MB\nUsed: {} MB\nCache/Free: {} MB\nSwap: {} MB".format(
                  dom['name'], dom['aloc']>>10, dom['used']>>10, 
-                (dom['aloc']-dom['used'])>>10))
+                (dom['aloc']-dom['used'])>>10, dom['swap']>>10))
             self.scene.addItem(s)
 
             rb = r*2 * dom['pref'] / dom['aloc'] 
