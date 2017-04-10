@@ -77,6 +77,7 @@ class MemPieView(QGraphicsView):
     def __init__(self):
         self.scene = QGraphicsScene()
         QGraphicsView.__init__(self, self.scene)
+        self.setSceneRect(0, 0, 2000, 2000)
         self.setViewportUpdateMode(QGraphicsView.NoViewportUpdate)
         self.setRenderHints(QPainter.Antialiasing)
         self.setWindowTitle("Qubes Memory Monitor - by JJ")
@@ -88,7 +89,6 @@ class MemPieView(QGraphicsView):
 
     def resizeEvent(self, evt):
         self.doupdate()
-        tf = self.transform()
         self.centerOn(self.cx, self.cy)
 
     def doupdate(self):
@@ -143,9 +143,6 @@ class MemPieView(QGraphicsView):
             l.setPos(x-(w if x<self.cx else 0), y-fm.height()/2)
             l.setBrush(QBrush(Qt.white))
             self.scene.addItem(l)
-
-            self.scene.addItem(QGraphicsRectItem(self.cx, self.cy, 10, 10))
-            self.scene.addItem(QGraphicsRectItem(0, 0, 1, 1))
 
             start_angle += angle
 
