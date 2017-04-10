@@ -77,15 +77,19 @@ class MemPieView(QGraphicsView):
     def __init__(self):
         self.scene = QGraphicsScene()
         QGraphicsView.__init__(self, self.scene)
+        self.setViewportUpdateMode(QGraphicsView.NoViewportUpdate)
         self.setRenderHints(QPainter.Antialiasing)
         self.setWindowTitle("Qubes Memory Monitor - by JJ")
         self.scene.setBackgroundBrush(QColor(Qt.darkGray).darker())
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setAlignment(Qt.AlignLeft | Qt.AlignTop)
+        self.setMinimumSize(QSize(100, 100))
 
     def resizeEvent(self, evt):
         self.doupdate()
+        tf = self.transform()
+        self.centerOn(self.cx, self.cy)
 
     def doupdate(self):
         self.populate(*mem())
@@ -94,20 +98,24 @@ class MemPieView(QGraphicsView):
         self.scene.clear()
 
         fm = QApplication.fontMetrics()
+        fh = fm.height()
         start_angle = 0
+        max_label_width = max(fm.width(s['name']) for s in doms)
 
         for dom in doms:
             angle = dom['aloc'] * 16*360 / t_aloc
             clr = QColor(label_colors[dom['label']])
 
-            w = ow = self.width(); h = oh = self.height()
-            h -= 2*fm.height()+8
-            w -= 10*fm.width('V')+8
+            w = self.width();
+            h = self.height()
+            self.cx = w / 2
+            self.cy = h / 2
+            h -= 8 + 2 * fh
+            w -= 8 + 2 * max_label_width
 
             r = (w if w<h else h)/2 
-            cx = ow/2; cy = oh/2
 
-            s=Slice(cx-r, cy-r, start_angle, angle, clr, r*2, Qt.SolidPattern)
+            s=Slice(self.cx-r, self.cy-r, start_angle, angle, clr, r*2, Qt.SolidPattern)
             s.setToolTip(dom['name'])
             s.setToolTip("{}\nAlloc: {} MB\nUsed: {} MB\nCache/Free: {} MB\nSwap: {} MB".format(
                  dom['name'], dom['aloc']>>10, dom['used']>>10, 
@@ -115,12 +123,12 @@ class MemPieView(QGraphicsView):
             self.scene.addItem(s)
 
             rb = r*2 * dom['pref'] / dom['aloc'] 
-            s = Slice(cx-rb/2,cy-rb/2, start_angle, angle, clr, rb, Qt.SolidPattern)
+            s = Slice(self.cx-rb/2,self.cy-rb/2, start_angle, angle, clr, rb, Qt.SolidPattern)
             s.setPen(QPen(Qt.white, 1, Qt.DashLine))
             self.scene.addItem(s)
 
             rb = r*2 * dom['used'] / dom['aloc'] 
-            s = Slice(cx-rb/2,cy-rb/2, start_angle, angle, clr, rb, Qt.SolidPattern)
+            s = Slice(self.cx-rb/2,self.cy-rb/2, start_angle, angle, clr, rb, Qt.SolidPattern)
             s.setBrush(QBrush(Qt.white, Qt.Dense6Pattern))
             self.scene.addItem(s)
 
@@ -129,12 +137,15 @@ class MemPieView(QGraphicsView):
             abig = (-start_angle - angle/2)
             a = abig * 3.14159 * 2 / 360 / 16
             l = QGraphicsSimpleTextItem(dom['name'])
-            x = cx+int(cos(a) * rb); y = cy+int(sin(a) * rb)
+            x = self.cx+int(cos(a) * rb); y = self.cy+int(sin(a) * rb)
 
             w = fm.width(dom['name'])
-            l.setPos(x-(w if x<cx else 0), y-fm.height()/2)
+            l.setPos(x-(w if x<self.cx else 0), y-fm.height()/2)
             l.setBrush(QBrush(Qt.white))
             self.scene.addItem(l)
+
+            self.scene.addItem(QGraphicsRectItem(self.cx, self.cy, 10, 10))
+            self.scene.addItem(QGraphicsRectItem(0, 0, 1, 1))
 
             start_angle += angle
 
