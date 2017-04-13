@@ -13,7 +13,7 @@ from time          import sleep
 from qubes.qubes   import vmm, QubesVmCollection
 from qubes.qmemman import SystemState
 from qubes         import qmemman_algo
-from math          import cos, sin
+from math          import cos, sin, sqrt
 
 CACHE_FACTOR=1.1
 DOM0_BOOST=350
@@ -133,13 +133,15 @@ class MemPieView(QGraphicsView):
                 (dom['aloc']-dom['used'])>>10, dom['swap']>>10))
             self.scene.addItem(s)
 
-            rb = r*2 * dom['pref'] / dom['aloc'] 
+            # sqrt makes area (vs. radius) proportional to used/alloc mem use
+
+            rb = r*2 * sqrt((float) (dom['pref']) / dom['aloc'])
             s = Slice(self.cx-rb/2,self.cy-rb/2, start_angle, angle, clr, rb, 
                 Qt.SolidPattern, dom['name'])
             s.setPen(QPen(Qt.white, 1, Qt.DashLine))
             self.scene.addItem(s)
 
-            rb = r*2 * dom['used'] / dom['aloc'] 
+            rb = r*2 * sqrt((float) (dom['used']) / dom['aloc'])
             s = Slice(self.cx-rb/2,self.cy-rb/2, start_angle, angle, clr, rb, 
                 Qt.SolidPattern, dom['name'])
             s.setBrush(QBrush(Qt.white, Qt.Dense6Pattern))
@@ -210,6 +212,7 @@ def main(args):
     mem_view.show()
 
     fm = QApplication.fontMetrics()
+
     def refresh():
         mem_view.doupdate()
         img = QPixmap.grabWidget(mem_view, mem_view.status_offset, 0, 24, 24)
