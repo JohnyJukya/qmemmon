@@ -104,6 +104,7 @@ class MemPieView(QGraphicsView):
 
     def resizeEvent(self, evt):
         self.doupdate()
+        self.setSceneRect(0, 0, self.width()-4, self.height()-4)
 
     def doupdate(self):
         self.populate(*mem())
@@ -165,8 +166,8 @@ class MemPieView(QGraphicsView):
             t.setPos(0, 0)
             t.setFont(qf)
             t.setBrush(QBrush(Qt.green))
-            self.scene.addItem(t)
             self.setWindowTitle(status + " - Qubes Memory Monitor by JJ")
+            self.scene.addItem(t)
 
             start_angle += angle
 
@@ -175,7 +176,6 @@ class MemPieView(QGraphicsView):
 
     def sizePolicy(self):
         return QSizePolicy.Expanding
-
 
 DEFAULT_INTERVAL=2
 
